@@ -189,8 +189,8 @@ let gameOver = false;
 const LIMIT = 15;
 
 const questions = [
-  "Will AI replace most jobs by 2040? 🤖",
-    "Will this stock rise tomorrow? 📈",
+"Will AI replace most jobs by 2040? 🤖",
+    "Will the gold stock rise tomorrow? 📈",
     "Is climate change accelerating? 🌍",
     "Will humans colonize Mars this century? 🚀",
     "Will crypto survive another crash? 💸",
@@ -203,7 +203,42 @@ const questions = [
     "Will space tourism become affordable? 🌌",
     "Will global internet ever go down completely? 🌐",
     "Will renewable energy fully replace fossil fuels? ⚡",
-    "Will humans trust AI more than humans? 👁️"
+    "Will humans trust AI more than humans? 👁️",
+    "Will virtual reality replace classrooms? 🕶️",
+    "Will flying cars become normal? 🚁",
+    "Will paper books disappear completely? 📚",
+    "Will robots become household assistants? 🏠",
+    "Will AI write better novels than humans? ✍️",
+    "Will humans discover alien life soon? 👽",
+    "Will social media become less popular? 📱",
+    "Will robots become doctors? 🏥",
+    "Will online shopping fully replace stores? 🛒",
+    "Will passwords disappear forever? 🔐",
+    "Will electric cars dominate the world? 🚘",
+    "Will gaming become a school subject? 🎮",
+    "Will AI judges exist in courts? ⚖️",
+    "Will humans work only 4 days a week? 📅",
+    "Will smart homes become mandatory? 🏡",
+    "Will Mars have permanent residents soon? 🔴",
+    "Will robots teach better than teachers? 👨‍🏫",
+    "Will digital money replace banks? 💰",
+    "Will climate disasters increase rapidly? 🌪️",
+    "Will AI become world leaders? 🏛️",
+    "Will humans stop using plastic mostly? ♻️",
+    "Will renewable energy make electricity free? 🔋",
+    "Will schools become fully online? 💻",
+    "Will drones replace delivery workers? 📦",
+    "Will humans upload memories digitally? 🧠",
+    "Will AI companions replace friendships? 🤝",
+    "Will robots police cities? 🚓",
+    "Will exams disappear in schools? 📝",
+    "Will humans reach another galaxy someday? 🌠",
+    "Will machine translation replace language learning? 🌍",
+    "Will robots dominate farming? 🌾",
+    "Will humans trust robots with surgery? 🩺",
+    "Will AI predict crimes before they happen? 🔍",
+    "Will technology reduce loneliness? ❤️",
+    "Will humans and AI work best together? 🤝⚡"
 ];
 
 function loadQuestion() {
@@ -253,10 +288,9 @@ function updateBars() {
 }
 
 function nextQuestion() {
-    index = (index + 1) % questions.length;
-    setTimeout(loadQuestion, 700);
+    let randomIndex = Math.floor(Math.random() * questions.length);
+    document.getElementById("question").innerText = questions[randomIndex];
 }
-
 function checkWinner() {
     if (human >= LIMIT || ai >= LIMIT) {
         gameOver = true;
@@ -270,7 +304,7 @@ function checkWinner() {
     }
 }
 
-loadQuestion();
+nextQuestion();
 
 </script>
 
