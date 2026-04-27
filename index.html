@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Prediction Arena</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #05060f;
+    color: white;
+    overflow-x: hidden;
+}
+
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.title {
+    font-size: 60px;
+    letter-spacing: 5px;
+    text-shadow: 0 0 20px cyan, 0 0 40px blue;
+}
+
+.subtitle {
+    opacity: 0.7;
+    margin-top: 10px;
+}
+
+.scoreboard {
+    display: flex;
+    gap: 30px;
+    margin-top: 25px;
+}
+
+.card {
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 12px;
+    width: 180px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0,255,255,0.2);
+    backdrop-filter: blur(6px);
+}
+
+.arena {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.question {
+    font-size: 26px;
+    margin-bottom: 25px;
+    text-shadow: 0 0 10px #00f7ff;
+}
+
+button {
+    padding: 12px 22px;
+    margin: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.up {
+    background: linear-gradient(45deg, #00c3ff, #0057ff);
+    color: white;
+    box-shadow: 0 0 15px #00c3ff;
+}
+
+.down {
+    background: linear-gradient(45deg, #ff2d55, #ff0066);
+    color: white;
+    box-shadow: 0 0 15px #ff2d55;
+}
+
+button:hover {
+    transform: scale(1.1);
+}
+
+.result {
+    margin-top: 25px;
+    font-size: 22px;
+    min-height: 40px;
+    text-shadow: 0 0 10px white;
+}
+
+.meter {
+    width: 300px;
+    height: 18px;
+    background: #111;
+    margin: 10px auto;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.fill {
+    height: 100%;
+    width: 0%;
+    transition: 0.8s;
+}
+
+.human { background: #ff3b3b; box-shadow: 0 0 10px #ff3b3b; }
+.ai { background: #00c3ff; box-shadow: 0 0 10px #00c3ff; }
+
+.final {
+    padding: 60px;
+    text-align: center;
+    font-size: 24px;
+    opacity: 0.9;
+    text-shadow: 0 0 10px cyan;
+}
+
+/* WIN POPUP */
+.win {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    text-align: center;
+    text-shadow: 0 0 20px cyan;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="hero">
+    <div class="title">PREDICTION ARENA ⚡</div>
+    <div class="subtitle">First to 15 wins reality</div>
+
+    <div class="scoreboard">
+        <div class="card">
+            HUMAN<br><h1 id="humanScore">0</h1>
+        </div>
+        <div class="card">
+            AI<br><h1 id="aiScore">0</h1>
+        </div>
+    </div>
+</div>
+
+<div class="arena">
+    <div class="question" id="question">Loading question...</div>
+
+    <button class="up" onclick="answer('up')">⬆ YES / RISE</button>
+    <button class="down" onclick="answer('down')">⬇ NO / FALL</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<div class="arena">
+    <h2>Live Accuracy 📊</h2>
+
+    <div>Human</div>
+    <div class="meter"><div class="fill human" id="hbar"></div></div>
+
+    <div>Machine</div>
+    <div class="meter"><div class="fill ai" id="abar"></div></div>
+</div>
+
+<div class="final">
+    Humans feel. Machines calculate. Reality does whatever it wants.
+</div>
+
+<div class="win" id="winScreen"></div>
+
+<script>
+
+let human = 0;
+let ai = 0;
+let index = 0;
+let gameOver = false;
+
+const LIMIT = 15;
+
+const questions = [
+  "Will AI replace most jobs by 2040? 🤖",
+    "Will this stock rise tomorrow? 📈",
+    "Is climate change accelerating? 🌍",
+    "Will humans colonize Mars this century? 🚀",
+    "Will crypto survive another crash? 💸",
+    "Will self-driving cars fully dominate cities? 🚗",
+    "Will education become fully AI-powered? 🎓",
+    "Will cash disappear globally? 💳",
+    "Will humans live past 120 years commonly? 🧬",
+    "Will robots outperform humans in sports? 🏆",
+    "Will AI ever feel emotions? 🧠",
+    "Will space tourism become affordable? 🌌",
+    "Will global internet ever go down completely? 🌐",
+    "Will renewable energy fully replace fossil fuels? ⚡",
+    "Will humans trust AI more than humans? 👁️"
+];
+
+function loadQuestion() {
+    document.getElementById("question").innerText = questions[index];
+}
+
+function answer(choice) {
+    if (gameOver) return;
+
+    let actual = Math.random() > 0.5 ? "up" : "down";
+    let aiChoice = Math.random() > 0.5 ? "up" : "down";
+
+    let resultText = "";
+    let emoji = "";
+
+    if (choice === actual) human++;
+    if (aiChoice === actual) ai++;
+
+    if (choice === actual && aiChoice === actual) {
+        resultText = "Both got it right. Suspicious universe behavior.";
+        emoji = "🤝";
+    } else if (choice === actual) {
+        resultText = "Humans win this round.";
+        emoji = "🔥";
+    } else if (aiChoice === actual) {
+        resultText = "AI wins this round.";
+        emoji = "🤖";
+    } else {
+        resultText = "Nobody wins this round.";
+        emoji = "🌫️";
+    }
+
+    document.getElementById("humanScore").innerText = human;
+    document.getElementById("aiScore").innerText = ai;
+
+    document.getElementById("result").innerText = emoji + " " + resultText;
+
+    updateBars();
+    checkWinner();
+
+    nextQuestion();
+}
+
+function updateBars() {
+    document.getElementById("hbar").style.width = Math.min(100, human * 6.6) + "%";
+    document.getElementById("abar").style.width = Math.min(100, ai * 6.6) + "%";
+}
+
+function nextQuestion() {
+    index = (index + 1) % questions.length;
+    setTimeout(loadQuestion, 700);
+}
+
+function checkWinner() {
+    if (human >= LIMIT || ai >= LIMIT) {
+        gameOver = true;
+
+        let winText = human >= LIMIT
+            ? "HUMANS WIN 🧠🔥"
+            : "AI WINS 🤖⚡";
+
+        document.getElementById("winScreen").style.display = "flex";
+        document.getElementById("winScreen").innerHTML = winText + "<br><br>Refresh to play again.";
+    }
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
